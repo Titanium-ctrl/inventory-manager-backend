@@ -9,5 +9,9 @@ import (
 func SetupRoutes(app *fiber.App) {
 	// Product routes
 	app.Post("/products", handlers.CreateProduct)
+	app.Get("/products", handlers.GetProducts)
+	app.Get("/products/:id", handlers.GetProduct)
+	app.Put("/products/:id", handlers.UpdateProduct)
+	app.Delete("/products/:id", handlers.DeleteProduct)
 	// Other routes...
 }

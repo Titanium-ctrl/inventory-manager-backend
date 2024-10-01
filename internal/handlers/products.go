@@ -86,7 +86,7 @@ func GetProducts(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(products)
+	return c.Status(fiber.StatusOK).JSON(respStruct)
 }
 
 // Function to fetch a single product, based on it's ID which should be passsed as a param

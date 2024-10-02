@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,6 +11,7 @@ import (
 	"github.com/supabase-community/supabase-go"
 	"ucrs.com/inventory-manager/backend/internal/database"
 	"ucrs.com/inventory-manager/backend/internal/models"
+	"ucrs.com/inventory-manager/backend/pkg"
 )
 
 // Create a new product, based on the JSON passed in the body
@@ -57,10 +59,15 @@ func CreateProduct(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(product)
 }
 
-// ADD PAGING TO COMPLETE THIS FUNCTION, and test it
+// Function to fetch multiple products, split into pages of max 10 products
 func GetProducts(c *fiber.Ctx) error {
 	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
-	products, _, err := supabaseClient.From("products").Select("*", "", false).Execute()
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil {
+		page = 1
+	}
+	startIndex, endIndex := pkg.GetPaginationIndexes(page, 10)
+	products, _, err := supabaseClient.From("products").Select("*", "", false).Range(startIndex, endIndex, "").Execute()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Cannot fetch products from database",

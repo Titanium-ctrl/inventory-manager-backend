@@ -101,7 +101,7 @@ func GetProduct(c *fiber.Ctx) error {
 	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
 	productID := c.Params("id")
 	product, _, err := supabaseClient.From("products").Select("*", "", false).Eq("id", productID).Execute()
-	fmt.Println(string(product), err)
+	//fmt.Println(string(product), err)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Cannot fetch product from database",
@@ -130,11 +130,19 @@ func GetProduct(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(respStruct[0])
 }
 
-// Work on finishing and testing this function
+// Function to update a product, based on its ID which should be passsed as a param
 func UpdateProduct(c *fiber.Ctx) error {
 	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
 	productID := c.Params("id")
 	product := new(models.Product)
+	pid, err := uuid.Parse(productID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid product ID",
+		})
+	}
+	product.ID = pid
+	product.UserID = database.FetchUserID(supabaseClient)
 
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -160,8 +168,8 @@ func UpdateProduct(c *fiber.Ctx) error {
 	product.UpdatedAt = now
 
 	//Save to database
-	result, count, err := supabaseClient.From("products").Update(product, "", "").Eq("id", productID).Execute()
-	fmt.Println(string(result), count, err)
+	_, _, err = supabaseClient.From("products").Update(product, "", "").Eq("id", productID).Execute()
+	//fmt.Println(string(result), count, err)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Cannot save product to database",
@@ -177,8 +185,8 @@ func DeleteProduct(c *fiber.Ctx) error {
 	productID := c.Params("id")
 
 	//Save to database
-	result, count, err := supabaseClient.From("products").Delete("", "").Eq("id", productID).Execute()
-	fmt.Println(string(result), count, err)
+	_, _, err := supabaseClient.From("products").Delete("", "").Eq("id", productID).Execute()
+	//fmt.Println(string(result), count, err)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Cannot delete product from database",

@@ -44,7 +44,13 @@ func CreateProduct(c *fiber.Ctx) error {
 	product.UpdatedAt = now
 
 	// Set UserID and ID
-	product.UserID = database.FetchUserID(supabaseClient)
+	userID, err := database.FetchUserID(supabaseClient)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Cannot fetch user ID - please log in",
+		})
+	}
+	product.UserID = userID
 	product.ID = uuid.New()
 
 	//Save to database

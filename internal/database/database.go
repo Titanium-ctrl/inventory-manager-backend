@@ -32,10 +32,10 @@ func CreateClient(jwt string) *supabase.Client {
 	return client
 }
 
-func FetchUserID(client *supabase.Client) uuid.UUID {
+func FetchUserID(client *supabase.Client) (uuid.UUID, error) {
 	clientdetails, err := client.Auth.GetUser()
 	if err != nil {
-		panic(err)
+		return uuid.Nil, err
 	}
-	return clientdetails.ID
+	return clientdetails.ID, nil
 }

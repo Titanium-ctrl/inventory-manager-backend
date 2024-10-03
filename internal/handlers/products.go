@@ -148,7 +148,13 @@ func UpdateProduct(c *fiber.Ctx) error {
 		})
 	}
 	product.ID = pid
-	product.UserID = database.FetchUserID(supabaseClient)
+	userID, err := database.FetchUserID(supabaseClient)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Cannot fetch user ID - please log in",
+		})
+	}
+	product.UserID = userID
 
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

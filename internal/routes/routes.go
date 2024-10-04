@@ -13,5 +13,13 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/products/:id", handlers.GetProduct)
 	app.Put("/products/:id", handlers.UpdateProduct)
 	app.Delete("/products/:id", handlers.DeleteProduct)
+
+	// Attribute routes
+	app.Post("/attributes", handlers.CreateAttribute)
+	app.Put("/attributes/:id", handlers.UpdateAttribute)
+	app.Get("/attributes", handlers.GetAttributes)
+	app.Get("/attributes/:id", handlers.GetAttribute)
+	app.Delete("/attributes/:id", handlers.DeleteAttribute)
+
 	// Other routes...
 }

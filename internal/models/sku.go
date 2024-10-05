@@ -8,7 +8,8 @@ import (
 
 type SKU struct {
 	ID        uuid.UUID `json:"id"`
-	ProductID uint      `json:"product_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	ProductID uuid.UUID `json:"product_id"`
 	SKU       string    `json:"sku"`
 	Price     float64   `json:"price"`
 	CreatedAt time.Time `json:"created_at"`

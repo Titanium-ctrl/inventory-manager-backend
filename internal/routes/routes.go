@@ -37,5 +37,13 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/barcodes/:id/skus", handlers.GetBarcodesBySKUID)
 	app.Delete("/barcodes/:id", handlers.DeleteBarcode)
 
+	//Category routes
+	app.Post("/categories", handlers.CreateCategory)
+	app.Put("/categories/:id", handlers.UpdateCategory)
+	app.Get("/categories", handlers.GetCategories)
+	app.Get("/categories/:id", handlers.GetCategory)
+	app.Delete("/categories/:id", handlers.DeleteCategory)
+	app.Get("/categories/:id/parent", handlers.GetCategoriesByParentID)
+
 	// Other routes...
 }

@@ -45,5 +45,12 @@ func SetupRoutes(app *fiber.App) {
 	app.Delete("/categories/:id", handlers.DeleteCategory)
 	app.Get("/categories/:id/parent", handlers.GetCategoriesByParentID)
 
+	// Location (warehouses) routes
+	app.Post("/warehouses", handlers.CreateWarehouse)
+	app.Put("/warehouses/:id", handlers.UpdateWarehouse)
+	app.Get("/warehouses", handlers.GetWarehouses)
+	app.Get("/warehouses/:id", handlers.GetWarehouse)
+	app.Delete("/warehouses/:id", handlers.DeleteWarehouse)
+
 	// Other routes...
 }

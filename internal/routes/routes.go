@@ -52,5 +52,13 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/warehouses/:id", handlers.GetWarehouse)
 	app.Delete("/warehouses/:id", handlers.DeleteWarehouse)
 
+	//Inventory routes - CRUD functions for database table storing quantity of items in inventory
+	app.Post("/inventory/:locationid/:skuid", handlers.UpdateInventory)         //Add/update inventory quantity
+	app.Get("/inventory", handlers.GetInventory)                                //List locations only
+	app.Get("/inventory/:locationid", handlers.GetInventory)                    //Get products stored at said location
+	app.Get("/inventory/:locationid/sku/:skuid", handlers.GetSpecificInventory) //Get quantity of specific sku at specific location
+	app.Get("/inventory/sku/:skuid", handlers.GetInventoryForSKU)               //Get quantity of specific sku at all locations
+	app.Delete("/inventory/:locationid", handlers.DeleteInventory)              //Delete inventory location (may not be needed)
+
 	// Other routes...
 }

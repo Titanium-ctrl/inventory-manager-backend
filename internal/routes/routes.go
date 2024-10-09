@@ -29,6 +29,12 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/skus/:id/products", handlers.GetSKUsByProductID)
 	app.Delete("/skus/:id", handlers.DeleteSKU)
 
+	// SKU Attribute routes
+	app.Post("/sku/:skuid/attributes", handlers.UpdateSKUAttribute)       //Insert/update skuattribute
+	app.Get("/sku/:skuid/attributes", handlers.GetSKUAttributes)          //Get attributes for a sku
+	app.Get("/sku/:skuid/attributes/:id", handlers.GetSKUAttribute)       //get specific sku attributw
+	app.Delete("/sku/:skuid/attributes/:id", handlers.DeleteSKUAttribute) //delete a specific attribute for a sku
+
 	// Barcode routes
 	app.Post("/barcodes", handlers.CreateBarcode)
 	app.Put("/barcodes/:id", handlers.UpdateBarcode)

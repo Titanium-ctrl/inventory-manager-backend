@@ -66,5 +66,17 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/inventory/sku/:skuid", handlers.GetInventoryForSKU)               //Get quantity of specific sku at all locations
 	app.Delete("/inventory/:locationid", handlers.DeleteInventory)              //Delete inventory location (may not be needed)
 
-	// Other routes...
+	//User details routes
+	app.Post("/users", handlers.CreateUser)
+	app.Get("/users/company/:companyid", handlers.GetUsersFromCompanyID)
+	app.Get("/users/:id", handlers.GetUser)
+	app.Put("/users/:id", handlers.UpdateUser)
+	app.Delete("/users/:id", handlers.DeleteUser) // Consider only admin users to be able to delete users
+
+	//Company routes
+	app.Post("/companies", handlers.CreateCompany)
+	//app.Get("/companies", handlers.GetCompanies)
+	app.Get("/companies/:id", handlers.GetCompany)
+	app.Put("/companies/:id", handlers.UpdateCompany)
+	app.Delete("/companies/:id", handlers.DeleteCompany)
 }

@@ -23,7 +23,7 @@ func CreateUser(c *fiber.Ctx) error {
 
 	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
 
-	if user.ID == uuid.Nil || user.FirstName == "" || user.LastName == "" || user.CompanyID == uuid.Nil {
+	if user.FirstName == "" || user.LastName == "" || user.CompanyID == uuid.Nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Missing required fields",
 		})

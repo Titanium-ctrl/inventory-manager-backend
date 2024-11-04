@@ -69,7 +69,7 @@ func SetupRoutes(app *fiber.App) {
 	//User details routes
 	app.Post("/users", handlers.CreateUser)
 	app.Get("/users/company/:companyid", handlers.GetUsersFromCompanyID)
-	app.Get("/users/:id", handlers.GetUser)
+	app.Get("/users", handlers.GetUser)
 	app.Put("/users/:id", handlers.UpdateUser)
 	app.Delete("/users/:id", handlers.DeleteUser) // Consider only admin users to be able to delete users
 

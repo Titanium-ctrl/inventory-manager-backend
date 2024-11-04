@@ -81,15 +81,18 @@ func GetUsersFromCompanyID(c *fiber.Ctx) error {
 }
 
 func GetUser(c *fiber.Ctx) error {
-	userID := c.Params("id")
-	if userID == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "User ID is required",
+	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
+
+	userID, err := database.FetchUserID(supabaseClient)
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Cannot fetch user ID",
 		})
 	}
-	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
+
 	//Fetch user from supabase
-	user, _, err := supabaseClient.From("users").Select("*", "", false).Eq("id", userID).Execute()
+	user, _, err := supabaseClient.From("users").Select("*", "", false).Eq("id", userID.String()).Execute()
 	if err != nil {
 		fmt.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

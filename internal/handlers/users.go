@@ -56,6 +56,8 @@ func CreateUser(c *fiber.Ctx) error {
 }
 
 func GetUsersFromCompanyID(c *fiber.Ctx) error {
+	// CHECK USER PERMISSIONS FIRST!!!!!!!!!!!
+
 	companyid := c.Params("companyid")
 	_, err := uuid.Parse(companyid)
 	if err != nil {
@@ -65,7 +67,13 @@ func GetUsersFromCompanyID(c *fiber.Ctx) error {
 	}
 	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
 
-	users, _, err := supabaseClient.From("barcodes").Select("*", "", false).Eq("company_id", companyid).Execute()
+	users, _, err := supabaseClient.From("users").Select("*", "", false).Eq("company_id", companyid).Execute()
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Cannot fetch users from database",
+		})
+	}
 
 	respStruct := []struct {
 		models.User
@@ -113,30 +121,32 @@ func GetUser(c *fiber.Ctx) error {
 }
 
 func UpdateUser(c *fiber.Ctx) error {
-	userID := c.Params("id")
-	if userID == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "User ID is required",
+
+	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
+	userID, err := database.FetchUserID(supabaseClient)
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Cannot fetch user ID",
 		})
 	}
+
 	var user models.User
-	err := c.BodyParser(&user)
+	err = c.BodyParser(&user)
 	if err != nil {
 		fmt.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Cannot unmarshal user from request body",
 		})
 	}
-	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
-	uid, err := uuid.Parse(userID)
 	if err != nil {
 		fmt.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Cannot parse user ID",
 		})
 	}
-	user.ID = uid
-	_, _, err = supabaseClient.From("users").Update(user, "", "").Eq("id", userID).Execute()
+	user.ID = userID
+	_, _, err = supabaseClient.From("users").Update(user, "", "").Eq("id", userID.String()).Execute()
 	if err != nil {
 		fmt.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -149,21 +159,16 @@ func UpdateUser(c *fiber.Ctx) error {
 }
 
 func DeleteUser(c *fiber.Ctx) error {
-	userID := c.Params("id")
-	if userID == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "User ID is required",
-		})
-	}
 	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
-	_, err := uuid.Parse(userID)
+	userID, err := database.FetchUserID(supabaseClient)
 	if err != nil {
 		fmt.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Cannot parse user ID",
+			"error": "Cannot fetch user ID",
 		})
 	}
-	_, _, err = supabaseClient.From("users").Delete("", "").Eq("id", userID).Execute()
+
+	_, _, err = supabaseClient.From("users").Delete("", "").Eq("id", userID.String()).Execute()
 	if err != nil {
 		fmt.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

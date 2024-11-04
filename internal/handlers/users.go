@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/supabase-community/supabase-go"
+	"ucrs.com/inventory-manager/backend/internal/database"
 	"ucrs.com/inventory-manager/backend/internal/models"
 )
 
@@ -28,10 +29,18 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
+	id, err := database.FetchUserID(supabaseClient)
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Cannot fetch user ID",
+		})
+	}
+	user.ID = id
 	user.UpdatedAt = time.Now()
 
 	//Insert user
-	_, _, err := supabaseClient.From("users").Insert(user, false, "", "", "").Execute()
+	_, _, err = supabaseClient.From("users").Insert(user, false, "", "", "").Execute()
 	if err != nil {
 		fmt.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

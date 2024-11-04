@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/supabase-community/supabase-go"
+	"ucrs.com/inventory-manager/backend/internal/database"
 	"ucrs.com/inventory-manager/backend/internal/models"
 )
 
@@ -22,18 +23,26 @@ func CreateCompany(c *fiber.Ctx) error {
 
 	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
 
-	if company.Name == "" || company.Owner == uuid.Nil {
+	if company.Name == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Missing required fields",
 		})
 	}
 
 	company.ID = uuid.New()
+	uid, err := database.FetchUserID(supabaseClient)
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Cannot fetch user ID",
+		})
+	}
+	company.Owner = uid
 	company.CreatedAt = time.Now()
 	company.UpdatedAt = time.Now()
 
 	//Insert user
-	_, _, err := supabaseClient.From("companies").Insert(company, false, "", "", "").Execute()
+	_, _, err = supabaseClient.From("companies").Insert(company, false, "", "", "").Execute()
 	if err != nil {
 		fmt.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

@@ -22,7 +22,7 @@ func CreateCompany(c *fiber.Ctx) error {
 
 	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
 
-	if company.ID == uuid.Nil || company.Name == "" || company.Owner == uuid.Nil {
+	if company.Name == "" || company.Owner == uuid.Nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Missing required fields",
 		})

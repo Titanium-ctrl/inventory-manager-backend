@@ -119,6 +119,16 @@ func UpdateCompany(c *fiber.Ctx) error {
 		})
 	}
 	company.ID = cid
+
+	uid, err := database.FetchUserID(supabaseClient)
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Cannot fetch user ID",
+		})
+	}
+	company.Owner = uid
+
 	_, _, err = supabaseClient.From("companies").Update(company, "", "").Eq("id", companyid).Execute()
 	if err != nil {
 		fmt.Println(err)

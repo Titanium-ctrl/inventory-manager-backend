@@ -28,6 +28,7 @@ func CreateCompany(c *fiber.Ctx) error {
 		})
 	}
 
+	company.ID = uuid.New()
 	company.CreatedAt = time.Now()
 	company.UpdatedAt = time.Now()
 

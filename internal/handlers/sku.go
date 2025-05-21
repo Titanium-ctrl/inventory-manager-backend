@@ -46,7 +46,7 @@ func GetSKU(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(respStruct[0])
 }
 
-// DO I LEAVE IT LIKE THIS OR DO I SET IT TO RETURN ALL SKUS BASED ON THE PRODUCT ID???
+
 func GetSKUs(c *fiber.Ctx) error {
 	supabaseClient := c.Locals("supabaseClient").(*supabase.Client)
 	skus, _, err := supabaseClient.From("skus").Select("*", "", false).Execute()

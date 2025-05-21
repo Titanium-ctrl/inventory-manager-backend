@@ -12,7 +12,7 @@ import (
 func CreateClient(jwt string) *supabase.Client {
 	// TODO: Create database client
 
-	//My API_URL and API_KEY variables need to go into a .env file. How do i fetch them?
+	//API_URL and API_KEY variables in .env file
 
 	API_URL := os.Getenv("API_URL")
 	API_KEY := os.Getenv("API_KEY")
